@@ -83,7 +83,23 @@ local ConROC_Priest, optionMaxIds = ...;
 		FeedbackRank4 = 19274,
 		FeedbackRank5 = 19275,
 	}
-		
+	ids.Discipline_Talent = { 
+		Martyrdom =  1, 
+		PowerInfusion =  2, 
+		MentalAgility =  3, 
+		UnbreakableWill =  4, 
+		ImprovedPowerWordShield =  5, 
+		ImprovedPowerWordFortitude =  6, 
+		WandSpecialization =  7, 
+		ImprovedInnerFire =  8, 
+		Meditation =  9, 
+		InnerFocus =  10, 
+		ImprovedManaBurn =  11, 
+		DivineSpirit =  12, 
+		SilentResolve =  13, 
+		MentalStrength =  14, 
+		ForceofWill =  15, 
+	}
 --Holy
 	ids.Holy_Ability = {
 		AbolishDisease = 552,
@@ -160,7 +176,24 @@ local ConROC_Priest, optionMaxIds = ...;
 		SmiteRank7 = 10933,
 		SmiteRank8 = 10934,
 	}
-	
+	ids.Holy_Talent = { 
+		Inspiration =  1, 
+		HolySpecialization =  2, 
+		SpiritualGuidance =  3, 
+		SearingLight =  4, 
+		SpiritualHealing =  5, 
+		ImprovedRenew =  6, 
+		ImprovedHealing =  7, 
+		HealingFocus =  8, 
+		SpellWarding =  9, 
+		ImprovedPrayerofHealing =  10, 
+		HolyNova =  11, 
+		DivineFury =  12, 
+		SpiritofRedemption =  13, 
+		HolyReach =  14, 
+		BlessedRecovery =  15, 
+		Lightwell =  16, 
+	}
 --Shadow
 	ids.Shad_Ability = {
 		DevouringPlagueRank1 = 2944, --Undead exclusive
@@ -235,7 +268,36 @@ local ConROC_Priest, optionMaxIds = ...;
 		TouchofWeaknessRank6 = 19266,
 		VampiricEmbrace = 15286,
 	}
-
+	ids.Shadow_Talent = { 
+		ShadowWeaving =  1, 
+		Darkness =  2, 
+		ShadowFocus =  3, 
+		Blackout =  4, 
+		SpiritTap =  5, 
+		ShadowAffinity =  6, 
+		ImprovedMindBlast =  7, 
+		ImprovedShadowWordPain =  8, 
+		ImprovedFade =  9, 
+		VampiricEmbrace =  10, 
+		MindFlay =  11, 
+		Shadowform =  12, 
+		Silence =  13, 
+		ImprovedPsychicScream =  14, 
+		ShadowReach =  15, 
+		ImprovedVampiricEmbrace =  16, 
+	}
+	ids.Runes = {
+		VoidPlague = 425204, --adds debuff
+		TwistedFaith = 425198, --passive
+		ShadowWordDeath = 401955, --adds debuff
+		MindSear = 413259,
+		Penance = 402174,
+		Homunculi = 402799,
+		SharedPain = 401969, --passive
+		PowerWordBarrier = 425207,
+		MindSpike = 431655, --Phase 2 - buff stacks up to 3 times
+		Dispersion = 425294, --Phase 2 - buff
+	}
 -- Auras
 	ids.Player_Buff = {
 		HymnofHope = 64904,

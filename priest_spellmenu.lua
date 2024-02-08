@@ -23,17 +23,41 @@ local plvl = UnitLevel('player');
 
 local defaults = {
 	["ConROC_SM_Role_Caster"] = true,
+	["ConROC_SM_Role_Healer"] = false,
 	["ConROC_SM_Role_PvP"] = false,
 
 	["ConROC_Caster_Debuff_ShadowWordPain"] = true,
-	["ConROC_Caster_Debuff_HexofWeakness"] = true,
+	["ConROC_Caster_Debuff_HexofWeakness"] = false,
 	["ConROC_Caster_Debuff_MindFlay"] = true,
-	["ConROC_Caster_Debuff_HolyFire"] = true,
-	["ConROC_Caster_Debuff_VampiricEmbrace"] = true,
+	["ConROC_Caster_Debuff_HolyFire"] = false,
+	["ConROC_Caster_Debuff_VampiricEmbrace"] = false,
 	["ConROC_Caster_Buff_PowerWordFortitude"] = true,
-	["ConROC_Caster_Buff_TouchofWeakness"] = true,
+	["ConROC_Caster_Buff_TouchofWeakness"] = false,
 	["ConROC_Caster_Buff_ShadowProtection"] = true,
 	["ConROC_Caster_Buff_DivineSpirit"] = true,
+	["ConROC_Caster_Option_UseWand"] = false,
+
+	["ConROC_Healer_Debuff_ShadowWordPain"] = false,
+	["ConROC_Healer_Debuff_HexofWeakness"] = false,
+	["ConROC_Healer_Debuff_MindFlay"] = false,
+	["ConROC_Healer_Debuff_HolyFire"] = false,
+	["ConROC_Healer_Debuff_VampiricEmbrace"] = false,
+	["ConROC_Healer_Buff_PowerWordFortitude"] = true,
+	["ConROC_Healer_Buff_TouchofWeakness"] = false,
+	["ConROC_Healer_Buff_ShadowProtection"] = true,
+	["ConROC_Healer_Buff_DivineSpirit"] = true,
+	["ConROC_Healer_Option_UseWand"] = false,
+
+	["ConROC_PvP_Debuff_ShadowWordPain"] = false,
+	["ConROC_PvP_Debuff_HexofWeakness"] = false,
+	["ConROC_PvP_Debuff_MindFlay"] = false,
+	["ConROC_PvP_Debuff_HolyFire"] = false,
+	["ConROC_PvP_Debuff_VampiricEmbrace"] = false,
+	["ConROC_PvP_Buff_PowerWordFortitude"] = true,
+	["ConROC_PvP_Buff_TouchofWeakness"] = false,
+	["ConROC_PvP_Buff_ShadowProtection"] = true,
+	["ConROC_PvP_Buff_DivineSpirit"] = true,
+	["ConROC_PvP_Option_UseWand"] = false,
 }
 
 ConROCPriestSpells = ConROCPriestSpells or defaults;
@@ -142,6 +166,15 @@ function ConROC:SpellmenuClass()
 	    	{spellID = ids.optionMaxIds.TouchofWeakness, spellCheckbox = "Buff_TouchofWeakness", reqLevel = 10, type="spell"},
 	    	{spellID = ids.optionMaxIds.ShadowProtection, spellCheckbox = "Buff_ShadowProtection", reqLevel = 30, type="spell"},
 	    	{spellID = ids.optionMaxIds.DivineSpirit, spellCheckbox = "Buff_DivineSpirit", reqLevel = 30, type="spell"},
+	    },
+	    groupType = "checkBoxes"
+	  },
+	  {
+	    frameName = "Spells/Runes",
+	    spells = {
+	    	{spellID = ids.optionMaxIds.Homunculi, spellCheckbox = "Spell_Homunculi", reqLevel = 1, type="spell"},
+	    	{spellID = ids.optionMaxIds.Penance, spellCheckbox = "Spell_Penance", reqLevel = 1, type="spell"},
+	    	{spellID = ids.optionMaxIds.ShadowWordDeath, spellCheckbox = "Spell_ShadowWordDeath", reqLevel = 1, type="spell"},
 	    },
 	    groupType = "checkBoxes"
 	  },
@@ -756,7 +789,7 @@ function ConROC:SpellMenuUpdate(newSpell)
 						oItem:SetPoint("TOPLEFT", lFrame, "BOTTOMLEFT", 0, 0);
 					end
 					if type(_spellData.spellID) == "number" then
-						if plvl >= _spellData.reqLevel and IsSpellKnown(_spellData.spellID) then
+						if plvl >= _spellData.reqLevel and (IsSpellKnown(_spellData.spellID) or IsSpellKnownOrOverridesKnown(_spellData.spellID)) then
 							lFrame = oItem;
 							lFrame:Show();
 							if oItem:IsShown() then
@@ -844,7 +877,7 @@ function ConROC:SpellMenuUpdate(newSpell)
 					else
 						oItem:SetPoint("TOPLEFT", lFrame, "BOTTOMLEFT", 0, 0);
 					end
-					if plvl >= _spellData.reqLevel and IsSpellKnown(_spellData.spellID) then													
+					if plvl >= _spellData.reqLevel and (IsSpellKnown(_spellData.spellID) or IsSpellKnownOrOverridesKnown(_spellData.spellID)) then
 						lFrame = oItem;
 						lFrame:Show();
 							if oItem:IsShown() then

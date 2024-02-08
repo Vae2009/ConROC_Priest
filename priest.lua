@@ -11,7 +11,8 @@ ConROC.Priest = {};
 
 local ConROC_Priest, ids = ...;
 local ConROC_Priest, optionMaxIds = ...;
-local currentSpecName
+local currentSpecName;
+local currentSpecID;
 
 function ConROC:EnableDefenseModule()
 	self.NextDef = ConROC.Priest.Defense;
@@ -27,37 +28,28 @@ function ConROC:PopulateTalentIDs()
     local numTabs = GetNumTalentTabs()
     
     for tabIndex = 1, numTabs do
-        local tabName = GetTalentTabInfo(tabIndex) .. "_Talent"
-        tabName = string.gsub(tabName, "%s", "") -- Remove spaces from tab name
-        if printTalentsMode then
-        	print(tabName..": ")
-        else
-        	ids[tabName] = {}
-    	end
-        
+        local tabName = GetTalentTabInfo(tabIndex)
+        tabName = string.gsub(tabName, "[^%w]", "") .. "_Talent" -- Remove spaces from tab name
+        print("ids."..tabName.." = {")
         local numTalents = GetNumTalents(tabIndex)
 
         for talentIndex = 1, numTalents do
             local name, _, _, _, _ = GetTalentInfo(tabIndex, talentIndex)
 
             if name then
-                local talentID = string.gsub(name, "%s", "") -- Remove spaces from talent name
-                if printTalentsMode then
-                	print(talentID .." = ID no: ", talentIndex)
-                else
-                	ids[tabName][talentID] = talentIndex
-                end
+                local talentID = string.gsub(name, "[^%w]", "") -- Remove spaces from talent name
+                    print(talentID .." = ", talentIndex ..",")
             end
         end
+        print("}")
     end
-    if printTalentsMode then printTalentsMode = false end
 end
-ConROC:PopulateTalentIDs()
 
 local Racial, Spec, Caster, Disc_Ability, Disc_Talent, Holy_Ability, Holy_Talent, Shad_Ability, Shad_Talent, Player_Buff, Player_Debuff, Target_Debuff = ids.Racial, ids.Spec, ids.Caster, ids.Disc_Ability, ids.Discipline_Talent, ids.Holy_Ability, ids.Holy_Talent, ids.Shad_Ability, ids.Shadow_Talent, ids.Player_Buff, ids.Player_Debuff, ids.Target_Debuff;
 
 function ConROC:SpecUpdate()
 	currentSpecName = ConROC:currentSpec()
+    currentSpecID = ConROC:currentSpec("ID")
 
 	if currentSpecName then
 	   ConROC:Print(self.Colors.Info .. "Current spec:", self.Colors.Success ..  currentSpecName)
@@ -120,11 +112,22 @@ ConROC:SpecUpdate()
 	local _TouchofWeakness = Shad_Ability.TouchofWeaknessRank1;
 	local _VampiricEmbrace = Shad_Ability.VampiricEmbrace;
 	local _ShadowWeaving = Player_Buff.ShadowWeavingRank1;
-		--Troll exclusive
-		local _HexofWeakness = Shad_Ability.HexofWeaknessRank1;
-		local _Shadowguard = Shad_Ability.ShadowguardRank1;
-		--Undead exclusive
-		local _DevouringPlague = Shad_Ability.DevouringPlagueRank1;
+	--Troll exclusive
+	local _HexofWeakness = Shad_Ability.HexofWeaknessRank1;
+	local _Shadowguard = Shad_Ability.ShadowguardRank1;
+	--Undead exclusive
+	local _DevouringPlague = Shad_Ability.DevouringPlagueRank1;
+
+	--Runes
+	local _VoidPlague = ids.Runes.VoidPlague;
+	local _TwistedFaith = ids.Runes.TwistedFaith;
+	local _ShadowWordDeath = ids.Runes.ShadowWordDeath;
+	local _MindSear = ids.Runes.MindSear;
+	local _Penance = ids.Runes.Penance;
+	local _Homunculi = ids.Runes.Homunculi;
+	local _SharedPain = ids.Runes.SharedPain;
+	local _PowerWordBarrier = ids.Runes.PowerWordBarrier;
+	local _MindSpike = ids.Runes.MindSpike;
 
 function ConROC:UpdateSpellID()
 --Ranks
@@ -390,6 +393,10 @@ function ConROC:UpdateSpellID()
 	--Troll exclusive
 		HexofWeakness = _HexofWeakness,
 		Shadowguard = _Shadowguard,
+	--Runes
+		ShadowWordDeath = _ShadowWordDeath,
+		Penance = _Penance,
+		Homunculi = _Homunculi,
 	}
 end
 ConROC:UpdateSpellID()
@@ -466,15 +473,26 @@ ConROC:UpdateSpellID()
 		local vEmbraceBuff	= ConROC:Buff(_VampiricEmbrace, timeShift);
 
 	local sWeavingBUFF, sWeavingCount	= ConROC:Buff(_ShadowWeaving, timeShift);
-	
+--Runes
+	local vPlagueRDY 						= ConROC:AbilityReady(_VoidPlague, timeShift);
+		local vPlagueDEBUFF					= ConROC:TargetDebuff(_VoidPlague, timeShift);
+	local swdRDY 							= ConROC:AbilityReady(_ShadowWordDeath, timeShift);
+		local swdDEBUFF						= ConROC:TargetDebuff(_ShadowWordDeath, timeShift);
+	local mSearRDY 							= ConROC:AbilityReady(_MindSear, timeShift);
+	local HomunculiRDY 						= ConROC:AbilityReady(_Homunculi, timeShift);
+	local mSpikeRDY 						= ConROC:AbilityReady(_MindSpike, timeShift);
+		local mSpikeBUFF, _, mSpikeCount	= ConROC:Buff(_MindSpike, timeShift);
+	local penanceRDY 						= ConROC:AbilityReady(_Penance, timeShift);
 --Conditions	
 	local isEnemy			= ConROC:TarHostile();
-	local targetPh			= ConROC:PercentHealth('target');	
+	local targetPh			= ConROC:PercentHealth('target');
+	local playerPh 			= ConROC:PercentHealth('player');
 	local moving			= ConROC:PlayerSpeed();
 	local incombat			= UnitAffectingCombat('player');	
-	local Close				= CheckInteractDistance("target", 3);
+    local Close				= CheckInteractDistance("target", 3);
 	local hasWand			= HasWandEquipped();
-	
+	--print(UnitDistanceSquared('player', 'target'))
+
 --Indicators
 	ConROC:AbilityRaidBuffs(_PowerWordFortitude, ConROC:CheckBox(ConROC_SM_Buff_PowerWordFortitude) and pwfRDY and not pwfBUFF);
 	ConROC:AbilityRaidBuffs(_DivineSpirit, ConROC:CheckBox(ConROC_SM_Buff_DivineSpirit) and dSpiritRDY and not dSpiritBUFF);
@@ -489,7 +507,52 @@ ConROC:UpdateSpellID()
 	ConROC:AbilityBurst(Disc_Ability.InnerFocus, iFocusRDY and mBlastRDY and isEnemy);
 --Warnings	
 	
---Rotations	
+--Rotations
+	--[[
+	if currentSpecID == ids.Spec.Discipline then
+
+	end
+	if currentSpecID == ids.Spec.Holy then
+
+	end
+	if currentSpecID == ids.Spec.Shadow then
+
+	end
+	]]
+	if ConROC.Seasons.IsSoD then
+		if ConROC:CheckBox(ConROC_SM_Role_Caster) or ConROC:CheckBox(ConROC_SM_Role_PvP) then
+			if sFormRDY and not sFormBUFF then
+				return Shad_Ability.Shadowform;
+			end
+			if ConROC:CheckBox(ConROC_SM_Spell_Homunculi) and HomunculiRDY then
+				return _Homunculi
+			end
+			if vPlagueRDY and not vPlagueDEBUFF then
+				return _VoidPlague
+			end
+			if ConROC:CheckBox(ConROC_SM_Debuff_ShadowWordPain) and swpRDY and not swpDebuff then
+				return _ShadowWordPain;
+			end
+			if mBlastRDY and currentSpell ~= _MindBlast then
+				return _MindBlast;
+			end
+			if ConROC:CheckBox(ConROC_SM_Spell_ShadowWordDeath) and swdRDY and not playerPh < 50 then
+				return _ShadowWordDeath;
+			end
+			if ConROC:CheckBox(ConROC_SM_Debuff_MindFlay) and mFlayRDY then
+				return _MindFlay;
+			end
+			if incombat and ConROC:CheckBox(ConROC_SM_Spell_Penance) and penanceRDY then
+				return _Penance;
+			end
+			if smiteRDY then
+				return _Smite;
+			end
+			if ConROC:CheckBox(ConROC_SM_Option_UseWand) and hasWand and (manaPercent <= 20 or targetPh <= 5) then
+				return Caster.Shoot;
+			end
+		end
+	end
 	if sFormRDY and not sFormBUFF then
 		return Shad_Ability.Shadowform;
 	end
