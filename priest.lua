@@ -489,7 +489,7 @@ ConROC:UpdateSpellID()
 	local playerPh 			= ConROC:PercentHealth('player');
 	local moving			= ConROC:PlayerSpeed();
 	local incombat			= UnitAffectingCombat('player');	
-    local Close				= CheckInteractDistance("target", 3);
+    local Close				= ConROC:IsMeleeRange()--CheckInteractDistance("target", 3);
 	local hasWand			= HasWandEquipped();
 	--print(UnitDistanceSquared('player', 'target'))
 
