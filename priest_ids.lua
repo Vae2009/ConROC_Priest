@@ -345,11 +345,7 @@ ids.Runes = {
 ids.Buff = {
 	HymnofHope = 64904,
 	VampiricEmbrace = 15286,
-	ShadowWeavingRank1 = 15257,
-	ShadowWeavingRank2 = 15331,
-	ShadowWeavingRank3 = 15332,
-	ShadowWeavingRank4 = 15333,
-	ShadowWeavingRank5 = 15334,
+	ShadowWeaving = 15257,
 }
 ids.Debuff = {
 	WeakendSoul = 6788,
@@ -552,8 +548,9 @@ function ConROC:UpdateSpellID()
 	elseif IsSpellKnown(ids.Rank.TouchofWeaknessRank3) then ids.Ability.TouchofWeakness = ids.Rank.TouchofWeaknessRank3;
 	elseif IsSpellKnown(ids.Rank.TouchofWeaknessRank2) then ids.Ability.TouchofWeakness = ids.Rank.TouchofWeaknessRank2; end
 
-	if IsSpellKnown(ids.Rank.ShadowWeavingRank5) then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank5;
-	elseif IsSpellKnown(ids.Rank.ShadowWeavingRank4) then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank4;
-	elseif IsSpellKnown(ids.Rank.ShadowWeavingRank3) then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank3;
-	elseif IsSpellKnown(ids.Rank.ShadowWeavingRank2) then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank2; end
+	local _, _ShadowWeavingRank = ConROC:TalentChosen(Spec.Shadow, Shadow_Talent.ShadowWeaving)
+	if _ShadowWeavingRank == 5 then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank5;
+	elseif ShadowWeavingRank == 4 then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank4;
+	elseif ShadowWeavingRank == 3 then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank3;
+	elseif ShadowWeavingRank == 2 then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank2; end
 end

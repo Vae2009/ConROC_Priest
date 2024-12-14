@@ -126,6 +126,7 @@ local function CheckScrollbarVisibility()
 end
 
 function ConROC:SpellmenuClass()
+	ConROC:UpdateSpellID();
 	ConROC_RoleSettingsTable = {
 		{
 		frameName = "Caster",
@@ -151,7 +152,7 @@ function ConROC:SpellmenuClass()
 	    frameName = "Debuffs",
 	    spells = {
 	    	{spellID = ids.Ability.ShadowWordPain, spellCheckbox = "Debuff_ShadowWordPain", reqLevel = 4, type="spell"},
-	    	{spellID = ids.Ability.HexofWeakness, spellCheckbox = "Debuff_HexofWeakness", reqLevel = 10, type="spell"},	    	
+	    	{spellID = ids.Ability.HexofWeakness, spellCheckbox = "Debuff_HexofWeakness", reqLevel = 10, type="spell"},
 	    	{spellID = ids.Ability.HolyFire, spellCheckbox = "Debuff_HolyFire", reqLevel = 20, type="spell"},
 	    	{spellID = ids.Ability.MindFlay, spellCheckbox = "Debuff_MindFlay", reqLevel = 20, type="spell"},
 	    	{spellID = ids.Ability.VampiricEmbrace, spellCheckbox = "Debuff_VampiricEmbrace", reqLevel = 30, type="spell"}
@@ -171,9 +172,9 @@ function ConROC:SpellmenuClass()
 	  {
 	    frameName = "Spells/Runes",
 	    spells = {
-	    	{spellID = ids.Ability.Homunculi, spellCheckbox = "Spell_Homunculi", reqLevel = 1, type="spell"},
-	    	{spellID = ids.Ability.Penance, spellCheckbox = "Spell_Penance", reqLevel = 1, type="spell"},
-	    	{spellID = ids.Ability.ShadowWordDeath, spellCheckbox = "Spell_ShadowWordDeath", reqLevel = 1, type="spell"},
+	    	{spellID = ids.Runes.Homunculi, spellCheckbox = "Spell_Homunculi", reqLevel = 1, type="spell"},
+	    	{spellID = ids.Runes.Penance, spellCheckbox = "Spell_Penance", reqLevel = 1, type="spell"},
+	    	{spellID = ids.Runes.ShadowWordDeath, spellCheckbox = "Spell_ShadowWordDeath", reqLevel = 1, type="spell"},
 	    },
 	    groupType = "checkBoxes"
 	  },
