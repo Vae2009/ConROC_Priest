@@ -101,7 +101,7 @@ function ConROC:Stats()
 	_Target_Health = UnitHealth('target');
 	_Target_Percent_Health = ConROC:PercentHealth('target');
 
-	_Rage, _Rage_Max = ConROC:PlayerPower('Rage');
+	_Mana, _Mana_Max, _Mana_Percent = ConROC:PlayerPower('Mana');
 
 	_Queue = 0;
 	_is_moving = ConROC:PlayerSpeed();
