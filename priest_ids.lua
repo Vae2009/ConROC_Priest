@@ -548,7 +548,7 @@ function ConROC:UpdateSpellID()
 	elseif IsSpellKnown(ids.Rank.TouchofWeaknessRank3) then ids.Ability.TouchofWeakness = ids.Rank.TouchofWeaknessRank3;
 	elseif IsSpellKnown(ids.Rank.TouchofWeaknessRank2) then ids.Ability.TouchofWeakness = ids.Rank.TouchofWeaknessRank2; end
 
-	local _, _ShadowWeavingRank = ConROC:TalentChosen(Spec.Shadow, Shadow_Talent.ShadowWeaving)
+	local _, _ShadowWeavingRank = ConROC:TalentChosen(ids.Spec.Shadow, ids.Shadow_Talent.ShadowWeaving)
 	if _ShadowWeavingRank == 5 then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank5;
 	elseif ShadowWeavingRank == 4 then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank4;
 	elseif ShadowWeavingRank == 3 then ids.Buff.ShadowWeaving = ids.Rank.ShadowWeavingRank3;

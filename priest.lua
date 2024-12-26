@@ -7,7 +7,6 @@ function ConROC:EnableRotationModule()
 	self.NextSpell = ConROC.Priest.Damage;
 
 	self:RegisterEvent('UNIT_SPELLCAST_SUCCEEDED');
-	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self.lastSpellId = 0;
 
 	ConROC:SpellmenuClass();
@@ -135,13 +134,13 @@ function ConROC.Priest.Damage(_, timeShift, currentSpell, gcd)
 
 --Rotations
 	--[[
-	if _Player_Spec_ID == ids.Spec.Discipline then
+	if _Player_Spec_ID == Spec.Discipline then
 
 	end
-	if _Player_Spec_ID == ids.Spec.Holy then
+	if _Player_Spec_ID == Spec.Holy then
 
 	end
-	if _Player_Spec_ID == ids.Spec.Shadow then
+	if _Player_Spec_ID == Spec.Shadow then
 
 	end
 	]]
