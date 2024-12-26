@@ -1,8 +1,6 @@
 ConROC.Priest = {};
 
 local ConROC_Priest, ids = ...;
-local currentSpecName;
-local currentSpecID;
 
 function ConROC:EnableRotationModule()
 	self.Description = "Priest";
@@ -11,6 +9,8 @@ function ConROC:EnableRotationModule()
 	self:RegisterEvent('UNIT_SPELLCAST_SUCCEEDED');
 	self:RegisterEvent("PLAYER_TALENT_UPDATE");
 	self.lastSpellId = 0;
+
+	ConROC:SpellmenuClass();
 end
 
 function ConROC:EnableDefenseModule()
@@ -23,48 +23,10 @@ function ConROC:UNIT_SPELLCAST_SUCCEEDED(event, unitID, lineID, spellID)
 	end
 end
 
-function ConROC:PopulateTalentIDs()
-    local numTabs = GetNumTalentTabs()
-
-    for tabIndex = 1, numTabs do
-        local tabName = GetTalentTabInfo(tabIndex)
-        tabName = string.gsub(tabName, "[^%w]", "") .. "_Talent" -- Remove spaces from tab name
-        print("ids."..tabName.." = {")
-        local numTalents = GetNumTalents(tabIndex)
-
-        for talentIndex = 1, numTalents do
-            local name, _, _, _, _ = GetTalentInfo(tabIndex, talentIndex)
-
-            if name then
-                local talentID = string.gsub(name, "[^%w]", "") -- Remove spaces from talent name
-                    print(talentID .." = ", talentIndex ..",")
-            end
-        end
-        print("}")
-    end
-end
-
-local Racial, Spec, Caster, Ability, Rank, Disc_Talent, Holy_Talent, Shad_Talent, Runes, Buff, Debuff = ids.Racial, ids.Spec, ids.Caster, ids.Ability, ids.Rank, ids.Discipline_Talent, ids.Holy_Talent, ids.Shadow_Talent, ids.Runes, ids.Buff, ids.Debuff;
-
-function ConROC:SpecUpdate()
-	currentSpecName = ConROC:currentSpec()
-    currentSpecID = ConROC:currentSpec("ID")
-
-	if currentSpecName then
-	   ConROC:Print(self.Colors.Info .. "Current spec:", self.Colors.Success ..  currentSpecName)
-	else
-	   ConROC:Print(self.Colors.Error .. "You do not currently have a spec.")
-	end
-end
-
-ConROC:SpecUpdate()
-
-function ConROC:PLAYER_TALENT_UPDATE()
-	ConROC:SpecUpdate();
-    ConROC:closeSpellmenu();
-end
+local Racial, Spec, Caster, Ability, Rank, Disc_Talent, Holy_Talent, Shad_Talent, Engrave, Runes, Buff, Debuff = ids.Racial, ids.Spec, ids.Caster, ids.Ability, ids.Rank, ids.Discipline_Talent, ids.Holy_Talent, ids.Shadow_Talent, ids.Engrave, ids.Runes, ids.Buff, ids.Debuff;
 
 --Info
+local _Player_Spec, _Player_Spec_ID = ConROC:currentSpec();
 local _Player_Level = UnitLevel("player");
 local _Player_Percent_Health = ConROC:PercentHealth('player');
 local _is_PvP = ConROC:IsPvP();
@@ -91,6 +53,7 @@ local _can_Execute = _Target_Percent_Health < 20;
 local _Berserking, _Berserking_RDY = _, _;
 
 function ConROC:Stats()
+	_Player_Spec, _Player_Spec_ID = ConROC:currentSpec();
 	_Player_Level = UnitLevel("player");
 	_Player_Percent_Health = ConROC:PercentHealth('player');
 	_is_PvP = ConROC:IsPvP();
@@ -172,13 +135,13 @@ function ConROC.Priest.Damage(_, timeShift, currentSpell, gcd)
 
 --Rotations
 	--[[
-	if currentSpecID == ids.Spec.Discipline then
+	if _Player_Spec_ID == ids.Spec.Discipline then
 
 	end
-	if currentSpecID == ids.Spec.Holy then
+	if _Player_Spec_ID == ids.Spec.Holy then
 
 	end
-	if currentSpecID == ids.Spec.Shadow then
+	if _Player_Spec_ID == ids.Spec.Shadow then
 
 	end
 	]]
