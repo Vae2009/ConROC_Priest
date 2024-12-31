@@ -25,37 +25,59 @@ local defaults = {
 	["ConROC_SM_Role_Healer"] = false,
 	["ConROC_SM_Role_PvP"] = false,
 
+	["ConROC_Caster_Debuff_VoidPlague"] = true,
+	["ConROC_Caster_Debuff_VampiricTouch"] = true,
 	["ConROC_Caster_Debuff_ShadowWordPain"] = true,
 	["ConROC_Caster_Debuff_HexofWeakness"] = false,
-	["ConROC_Caster_Debuff_MindFlay"] = true,
 	["ConROC_Caster_Debuff_HolyFire"] = false,
-	["ConROC_Caster_Debuff_VampiricEmbrace"] = false,
+	["ConROC_Caster_Debuff_VampiricEmbrace"] = true,
 	["ConROC_Caster_Buff_PowerWordFortitude"] = true,
 	["ConROC_Caster_Buff_TouchofWeakness"] = false,
 	["ConROC_Caster_Buff_ShadowProtection"] = true,
 	["ConROC_Caster_Buff_DivineSpirit"] = true,
+	["ConROC_Caster_Filler_Smite"] = true,
+	["ConROC_Caster_Filler_MindSpike"] = false,
+	["ConROC_Caster_Filler_MindFlay"] = false,
+	["ConROC_Caster_Option_AoED"] = false,
+	["ConROC_Caster_Option_AoE"] = false,
 	["ConROC_Caster_Option_UseWand"] = false,
 
+	["ConROC_Healer_Debuff_VoidPlague"] = false,
+	["ConROC_Healer_Debuff_VampiricTouch"] = false,
 	["ConROC_Healer_Debuff_ShadowWordPain"] = false,
 	["ConROC_Healer_Debuff_HexofWeakness"] = false,
-	["ConROC_Healer_Debuff_MindFlay"] = false,
-	["ConROC_Healer_Debuff_HolyFire"] = false,
+	["ConROC_Healer_Debuff_HolyFire"] = true,
 	["ConROC_Healer_Debuff_VampiricEmbrace"] = false,
 	["ConROC_Healer_Buff_PowerWordFortitude"] = true,
 	["ConROC_Healer_Buff_TouchofWeakness"] = false,
 	["ConROC_Healer_Buff_ShadowProtection"] = true,
 	["ConROC_Healer_Buff_DivineSpirit"] = true,
+	["ConROC_Healer_Filler_Smite"] = false,
+	["ConROC_Healer_Filler_MindSpike"] = false,
+	["ConROC_Healer_Filler_MindFlay"] = false,
+	["ConROC_Healer_Option_AoED"] = false,
+	["ConROC_Healer_Option_AoE"] = false,
 	["ConROC_Healer_Option_UseWand"] = false,
 
+	["ConROC_PvP_Debuff_VoidPlague"] = false,
+	["ConROC_PvP_Debuff_VampiricTouch"] = false,
 	["ConROC_PvP_Debuff_ShadowWordPain"] = false,
 	["ConROC_PvP_Debuff_HexofWeakness"] = false,
-	["ConROC_PvP_Debuff_MindFlay"] = false,
 	["ConROC_PvP_Debuff_HolyFire"] = false,
 	["ConROC_PvP_Debuff_VampiricEmbrace"] = false,
 	["ConROC_PvP_Buff_PowerWordFortitude"] = true,
 	["ConROC_PvP_Buff_TouchofWeakness"] = false,
 	["ConROC_PvP_Buff_ShadowProtection"] = true,
 	["ConROC_PvP_Buff_DivineSpirit"] = true,
+	["ConROC_PvP_Spell_Homunculi"] = false,
+	["ConROC_PvP_Spell_Penance"] = false,
+	["ConROC_PvP_Spell_Shadowfiend"] = false,
+	["ConROC_PvP_Spell_ShadowWordDeath"] = false,
+	["ConROC_PvP_Filler_Smite"] = false,
+	["ConROC_PvP_Filler_MindSpike"] = false,
+	["ConROC_PvP_Filler_MindFlay"] = false,
+	["ConROC_PvP_Option_AoED"] = false,
+	["ConROC_PvP_Option_AoE"] = false,
 	["ConROC_PvP_Option_UseWand"] = false,
 }
 
@@ -125,8 +147,9 @@ local function CheckScrollbarVisibility()
     end
 end
 
-function ConROC:SpellmenuClass()
-	ConROC:UpdateSpellID();
+function ConROC:RotationChoices()
+    ConROC:UpdateSpellID();
+
 	ConROC_RoleSettingsTable = {
 		{
 		frameName = "Caster",
@@ -147,45 +170,61 @@ function ConROC:SpellmenuClass()
 		role = "ConROC_SM_Role_PvP",
 		},
 	}
+
 	ConROC_RotationSettingsTable = {
-	  {
-	    frameName = "Debuffs",
-	    spells = {
-	    	{spellID = ids.Ability.ShadowWordPain, spellCheckbox = "Debuff_ShadowWordPain", reqLevel = 4, type="spell"},
-	    	{spellID = ids.Ability.HexofWeakness, spellCheckbox = "Debuff_HexofWeakness", reqLevel = 10, type="spell"},
-	    	{spellID = ids.Ability.HolyFire, spellCheckbox = "Debuff_HolyFire", reqLevel = 20, type="spell"},
-	    	{spellID = ids.Ability.MindFlay, spellCheckbox = "Debuff_MindFlay", reqLevel = 20, type="spell"},
-	    	{spellID = ids.Ability.VampiricEmbrace, spellCheckbox = "Debuff_VampiricEmbrace", reqLevel = 30, type="spell"}
-	    },
-	    groupType = "checkBoxes"
-	  },
-	  {
-	    frameName = "Buffs",
-	    spells = {
-	    	{spellID = ids.Ability.PowerWordFortitude, spellCheckbox = "Buff_PowerWordFortitude", reqLevel = 1, type="spell"},
-	    	{spellID = ids.Ability.TouchofWeakness, spellCheckbox = "Buff_TouchofWeakness", reqLevel = 10, type="spell"},
-	    	{spellID = ids.Ability.ShadowProtection, spellCheckbox = "Buff_ShadowProtection", reqLevel = 30, type="spell"},
-	    	{spellID = ids.Ability.DivineSpirit, spellCheckbox = "Buff_DivineSpirit", reqLevel = 30, type="spell"},
-	    },
-	    groupType = "checkBoxes"
-	  },
-	  {
-	    frameName = "Spells/Runes",
-	    spells = {
-	    	{spellID = ids.Runes.Homunculi, spellCheckbox = "Spell_Homunculi", reqLevel = 1, type="spell"},
-	    	{spellID = ids.Runes.Penance, spellCheckbox = "Spell_Penance", reqLevel = 1, type="spell"},
-	    	{spellID = ids.Runes.ShadowWordDeath, spellCheckbox = "Spell_ShadowWordDeath", reqLevel = 1, type="spell"},
-	    },
-	    groupType = "checkBoxes"
-	  },
-	  {
-	    frameName = "Options",
-	    spells = {
-	    	{spellID = "AoE Toggle Button", spellCheckbox = "Option_AoE", reqLevel = 20, type="aoetoggler"},
-	    	{spellID = "Use Wand", spellCheckbox = "Option_UseWand", reqLevel = 5, type="wand"}
-	    }
+		{
+		  frameName = "Debuffs",
+		  spells = {
+			  {spellID = ids.Runes.VoidPlague, spellCheckbox = "Debuff_VoidPlague", reqLevel = 1, type = "spell"},
+			  {spellID = ids.Runes.VampiricTouch, spellCheckbox = "Debuff_VampiricTouch", reqLevel = 1, type = "spell"},
+			  {spellID = ids.Ability.ShadowWordPain, spellCheckbox = "Debuff_ShadowWordPain", reqLevel = 4, type = "spell"},
+			  {spellID = ids.Ability.HexofWeakness, spellCheckbox = "Debuff_HexofWeakness", reqLevel = 10, type = "spell"},
+			  {spellID = ids.Ability.HolyFire, spellCheckbox = "Debuff_HolyFire", reqLevel = 20, type = "spell"},
+			  {spellID = ids.Ability.VampiricEmbrace, spellCheckbox = "Debuff_VampiricEmbrace", reqLevel = 30, type = "spell"}
+		  },
+		  groupType = "checkBoxes"
+		},
+		{
+		  frameName = "Buffs",
+		  spells = {
+			  {spellID = ids.Ability.PowerWordFortitude, spellCheckbox = "Buff_PowerWordFortitude", reqLevel = 1, type="spell"},
+			  {spellID = ids.Ability.TouchofWeakness, spellCheckbox = "Buff_TouchofWeakness", reqLevel = 10, type="spell"},
+			  {spellID = ids.Ability.ShadowProtection, spellCheckbox = "Buff_ShadowProtection", reqLevel = 30, type="spell"},
+			  {spellID = ids.Ability.DivineSpirit, spellCheckbox = "Buff_DivineSpirit", reqLevel = 30, type="spell"},
+		  },
+		  groupType = "checkBoxes"
+		},
+		{
+		  frameName = "Spells",
+		  spells = {
+			  {spellID = ids.Runes.Homunculi, spellCheckbox = "Spell_Homunculi", reqLevel = 1, type="spell"},
+			  {spellID = ids.Runes.Penance, spellCheckbox = "Spell_Penance", reqLevel = 1, type="spell"},
+			  {spellID = ids.Runes.Shadowfiend, spellCheckbox = "Spell_Shadowfiend", reqLevel = 1, type="spell"},
+			  {spellID = ids.Runes.ShadowWordDeath, spellCheckbox = "Spell_ShadowWordDeath", reqLevel = 1, type="spell"},
+		  },
+		  groupType = "checkBoxes"
+		},
+		{
+		  frameName = "Filler",
+		  spells = {
+			  {spellID = ids.Ability.Smite, spellCheckbox = "Filler_Smite", reqLevel = 1, type="spell"},
+			  {spellID = ids.Runes.MindSpike, spellCheckbox = "Filler_MindSpike", reqLevel = 1, type="spell"},
+			  {spellID = ids.Ability.MindFlay, spellCheckbox = "Filler_MindFlay", reqLevel = 20, type="spell"},
+		  },
+		  groupType = "radioButtons"
+		},
+		{
+		  frameName = "Options",
+		  spells = {
+			  {spellID = "AoE Toggle Button", spellCheckbox = "Option_AoE", reqLevel = 1, type="aoetoggler"},
+			  {spellID = "Use Wand", spellCheckbox = "Option_UseWand", reqLevel = 5, type="wand"}
+		  }
+		}
 	  }
-	}
+end
+
+function ConROC:SpellmenuClass()
+	ConROC:RotationChoices();
 
 	local _, Class, classId = UnitClass("player");
 	local Color = RAID_CLASS_COLORS[Class];
@@ -659,6 +698,41 @@ function ConROC:OptionTextfield(_spellData, i, j, _spellFrame)
 	lastFrame:Show();
 end
 
+function ConROC:CustomOption(_spellData, i, j, _spellFrame)
+	local spellName, _, spellTexture = GetSpellInfo(_spellData.spellID)
+	local oItem = CreateFrame("CheckButton", "ConROC_SM_".._spellData.spellCheckbox, _spellFrame, "UICheckButtonTemplate");
+	local oItemtext = oItem:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall");
+	if j == 1 then
+		oItem:SetPoint("TOPLEFT", lastFrame, "TOPLEFT", 0, 0);
+	else
+		oItem:SetPoint("TOPLEFT", lastFrame, "BOTTOMLEFT", 0, 0);
+	end
+	lastFrame = oItem;
+	oItem:SetSize(20,20)
+	ConROC:setRoleChecked(_spellData, oItem)
+
+	oItem:SetScript("OnClick",
+		function(self)
+			ConROC:setRoleSpellClicked(_spellData, self)
+		end);
+	-- static
+	oItemtext:SetText(_spellData.customName);
+	local c1t = oItem.texture;
+	if not c1t then
+		c1t = oItem:CreateTexture('CheckFrame'..j..'_check'..j..'_Texture', 'ARTWORK');
+		c1t:SetTexture(spellTexture);
+		c1t:SetBlendMode('BLEND');
+		oItem.texture = c1t;
+	end
+	c1t:SetSize(20,20)
+	c1t:SetPoint("LEFT", oItem, "RIGHT", 2, 0);
+	oItemtext:SetPoint('LEFT', c1t, 'RIGHT', 4, 0);
+
+	scrollHeight = scrollHeight + math.ceil(lastFrame:GetHeight());
+	spellFrameHeight = spellFrameHeight + math.ceil(lastFrame:GetHeight());
+	lastFrame:Show();
+end
+
 function ConROC:OptionAoE(_spellData, i, j, _spellFrame)
 	local myFrame = "ConROC_SM_".._spellData.spellCheckbox
 	local oItem = CreateFrame("CheckButton", myFrame, _spellFrame, "UICheckButtonTemplate");
@@ -758,8 +832,9 @@ function ConROC:OptionNone(_spellData, i, j, _spellFrame, _checkType, _radioButt
     lastFrame:Show();
 end
 
-function ConROC:SpellMenuUpdate(newSpell)
-	ConROC:UpdateSpellID();
+function ConROC:SpellMenuUpdate()
+	ConROC:RotationChoices();
+
 	lastFrame = ConROCScrollChild;
 	local anyHLVisible = false;
 	scrollHeight = 0;
@@ -813,9 +888,6 @@ function ConROC:SpellMenuUpdate(newSpell)
 							oItem:Hide()
 							--print("Hide spell", spellName)
 						end
-					else
-						scrollHeight = scrollHeight + math.ceil(lFrame:GetHeight());
-						spellFrameHeight = spellFrameHeight + math.ceil(oItem:GetHeight());
 					end
 				--spell end
 				elseif _spellData.type == "wand" then
@@ -984,9 +1056,6 @@ function ConROC:SpellMenuUpdate(newSpell)
 		ConROCScrollContainer:Show();
 		ConROCScrollChild:Show();
     end
-	if newSpell then
-		ConROC:closeSpellmenu();
-	end
 end
 function flashMessage()
 	if HasWandEquipped() then

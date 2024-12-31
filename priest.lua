@@ -9,7 +9,9 @@ function ConROC:EnableRotationModule()
 	self:RegisterEvent('UNIT_SPELLCAST_SUCCEEDED');
 	self.lastSpellId = 0;
 
-	ConROC:SpellmenuClass();
+	if ConROCSpellmenuClass == nil then
+		ConROC:SpellmenuClass();
+	end
 end
 
 function ConROC:EnableDefenseModule()
@@ -41,6 +43,7 @@ local _Mana, _Mana_Max, _Mana_Percent = ConROC:PlayerPower('Mana');
 
 --Conditions
 local _Queue = 0;
+local _Has_Wand = HasWandEquipped();
 local _is_moving = ConROC:PlayerSpeed();
 local _enemies_in_melee, _target_in_melee = ConROC:Targets("Melee");
 local _enemies_in_10yrds, _target_in_10yrds = ConROC:Targets("10");
@@ -66,6 +69,7 @@ function ConROC:Stats()
 	_Mana, _Mana_Max, _Mana_Percent = ConROC:PlayerPower('Mana');
 
 	_Queue = 0;
+	_Has_Wand = HasWandEquipped();
 	_is_moving = ConROC:PlayerSpeed();
 	_enemies_in_melee, _target_in_melee = ConROC:Targets("Melee");
 	_enemies_in_10yrds, _target_in_10yrds = ConROC:Targets("10");
@@ -77,7 +81,8 @@ function ConROC:Stats()
 end
 
 function ConROC.Priest.Damage(_, timeShift, currentSpell, gcd)
-	ConROC:UpdateSpellID()
+	ConROC:UpdateSpellID();
+	wipe(ConROC.SuggestedSpells);
 	ConROC:Stats();
 
 --Abilities		
@@ -85,8 +90,9 @@ function ConROC.Priest.Damage(_, timeShift, currentSpell, gcd)
 		local _DivineSpirit_BUFF = ConROC:Aura(_DivineSpirit, timeShift);
 	local _InnerFocus, _InnerFocus_RDY = ConROC:AbilityReady(Ability.InnerFocus, timeShift);
 	local _ManaBurn, _ManaBurn_RDY = ConROC:AbilityReady(Ability.ManaBurn, timeShift);
-	local _PowerInfusion, _PowerInfusion_RDY = ConROC:AbilityReady(Ability.PowerInfusion, timeShift);
+	local _PrayerofFortitude, _PrayerofFortitude_RDY = ConROC:AbilityReady(Ability.PrayerofFortitude, timeShift);
 	local _PrayerofSpirit, _PrayerofSpirit_RDY = ConROC:AbilityReady(Ability.PrayerofSpirit, timeShift);
+	local _PowerInfusion, _PowerInfusion_RDY = ConROC:AbilityReady(Ability.PowerInfusion, timeShift);
 	local _PowerWordFortitude, _PowerWordFortitude_RDY = ConROC:AbilityReady(Ability.PowerWordFortitude, timeShift);
 		local _PowerWordFortitude_BUFF = ConROC:Aura(_PowerWordFortitude, timeShift);
 
@@ -112,157 +118,274 @@ function ConROC.Priest.Damage(_, timeShift, currentSpell, gcd)
 	local _ShadowWeaving_BUFF, _ShadowWeaving_COUNT = ConROC:Aura(Buff.ShadowWeaving, timeShift);
 
 --Runes
-	local _VoidPlague, _VoidPlague_RDY = ConROC:AbilityReady(Runes.VoidPlague, timeShift);
-		local _VoidPlague_DEBUFF = ConROC:TargetAura(_VoidPlague, timeShift);
-	local _ShadowWordDeath, _ShadowWordDeath_RDY = ConROC:AbilityReady(Runes.ShadowWordDeath, timeShift);
-	local _MindSear, _MindSear_RDY = ConROC:AbilityReady(Runes.MindSear, timeShift);
 	local _Homunculi, _Homunculi_RDY = ConROC:AbilityReady(Runes.Homunculi, timeShift);
 	local _MindSpike, _MindSpike_RDY = ConROC:AbilityReady(Runes.MindSpike, timeShift);
 		local _MindSpike_BUFF, _MindSpike_COUNT = ConROC:Aura(_MindSpike, timeShift);
+	local _Shadowfiend, _Shadowfiend_RDY = ConROC:AbilityReady(Runes.Shadowfiend, timeShift);
+	local _ShadowWordDeath, _ShadowWordDeath_RDY = ConROC:AbilityReady(Runes.ShadowWordDeath, timeShift);
+	local _VampiricTouch, _VampiricTouch_RDY = ConROC:AbilityReady(Runes.VampiricTouch, timeShift);
+		local _VampiricTouch_DEBUFF = ConROC:TargetAura(_VampiricTouch, timeShift);
+
+	local _VoidPlague, _VoidPlague_RDY = ConROC:AbilityReady(Runes.VoidPlague, timeShift);
+		local _VoidPlague_DEBUFF = ConROC:TargetAura(_VoidPlague, timeShift);
+	local _MindSear, _MindSear_RDY = ConROC:AbilityReady(Runes.MindSear, timeShift);
 	local _Penance, _Penance_RDY = ConROC:AbilityReady(Runes.Penance, timeShift);
 
 --Conditions
-	local _Has_Wand = HasWandEquipped();
+	if UnitInParty("player") then
+		if _PrayerofFortitude_RDY then
+			_PowerWordFortitude, _PowerWordFortitude_RDY = _PrayerofFortitude, _PrayerofFortitude_RDY;
+			_PowerWordFortitude_BUFF = ConROC:Aura(_PowerWordFortitude, timeShift);
+		end
+		if _PrayerofSpirit_RDY then
+			_DivineSpirit, _DivineSpirit_RDY = _PrayerofSpirit, _PrayerofSpirit_RDY;
+			_DivineSpirit_BUFF = ConROC:Aura(_DivineSpirit, timeShift);
+		end
+	end
 
 --Indicators
 	ConROC:AbilityRaidBuffs(_PowerWordFortitude, ConROC:CheckBox(ConROC_SM_Buff_PowerWordFortitude) and _PowerWordFortitude_RDY and not _PowerWordFortitude_BUFF);
 	ConROC:AbilityRaidBuffs(_DivineSpirit, ConROC:CheckBox(ConROC_SM_Buff_DivineSpirit) and _DivineSpirit_RDY and not _DivineSpirit_BUFF);
 
 	ConROC:AbilityBurst(_InnerFocus, _InnerFocus_RDY and _MindBlast_RDY and _is_Enemy);
+	ConROC:AbilityBurst(_Shadowfiend, ConROC:CheckBox(ConROC_SM_Spell_Shadowfiend) and _Shadowfiend_RDY and _is_Enemy and _Mana_Percent < 70);
 
 --Warnings	
 
 --Rotations
-	--[[
-	if _Player_Spec_ID == Spec.Discipline then
+	repeat
+		while(true) do
+			if ConROC.Seasons.IsSoD then
+				if ConROC:CheckBox(ConROC_SM_Role_Caster) or ConROC:CheckBox(ConROC_SM_Role_PvP) then
+					if _Shadowform_RDY and not _Shadowform_FORM then
+						tinsert(ConROC.SuggestedSpells, _Shadowform);
+						_Shadowform_FORM = true;
+						_Queue = _Queue + 1;
+						break;
+					end
 
-	end
-	if _Player_Spec_ID == Spec.Holy then
+					if ConROC:CheckBox(ConROC_SM_Spell_Homunculi) and _Homunculi_RDY then
+						tinsert(ConROC.SuggestedSpells, _Homunculi);
+						_Homunculi_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
 
-	end
-	if _Player_Spec_ID == Spec.Shadow then
+					if ConROC:CheckBox(ConROC_SM_Debuff_VoidPlague) and _VoidPlague_RDY and not _VoidPlague_DEBUFF then
+						tinsert(ConROC.SuggestedSpells, _VoidPlague);
+						_VoidPlague_DEBUFF = true;
+						_Queue = _Queue + 1;
+						break;
+					end
 
-	end
-	]]
-	if ConROC.Seasons.IsSoD then
-		if ConROC:CheckBox(ConROC_SM_Role_Caster) or ConROC:CheckBox(ConROC_SM_Role_PvP) then
-			if _Shadowform_RDY and not _Shadowform_FORM then
-				return _Shadowform;
+					if ConROC:CheckBox(ConROC_SM_Debuff_VampiricTouch) and _VampiricTouch_RDY and not _VampiricTouch_DEBUFF and currentSpell ~= _VampiricTouch then
+						tinsert(ConROC.SuggestedSpells, _VampiricTouch);
+						_VampiricTouch_DEBUFF = true;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Debuff_ShadowWordPain) and _ShadowWordPain_RDY and not _ShadowWordPain_DEBUFF then
+						tinsert(ConROC.SuggestedSpells, _ShadowWordPain);
+						_ShadowWordPain_DEBUFF = true;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _MindBlast_RDY and currentSpell ~= _MindBlast then
+						tinsert(ConROC.SuggestedSpells, _MindBlast);
+						_MindBlast_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Spell_ShadowWordDeath) and _ShadowWordDeath_RDY and _Player_Percent_Health > 50 then
+						tinsert(ConROC.SuggestedSpells, _ShadowWordDeath);
+						_ShadowWordDeath_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Filler_MindSpike) and _MindSpike_RDY then
+						tinsert(ConROC.SuggestedSpells, _MindSpike);
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Filler_MindFlay) and _MindFlay_RDY then
+						tinsert(ConROC.SuggestedSpells, _MindFlay);
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Spell_Penance) and _Penance_RDY then
+						tinsert(ConROC.SuggestedSpells, _Penance);
+						_Penance_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Filler_Smite) and _Smite_RDY then
+						tinsert(ConROC.SuggestedSpells, _Smite);
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Option_UseWand) and _Has_Wand and (_Mana_Percent <= 20 or _Target_Percent_Health <= 5) then
+						tinsert(ConROC.SuggestedSpells, Caster.Shoot);
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					tinsert(ConROC.SuggestedSpells, 26008); --Waiting Spell Icon
+					_Queue = _Queue + 3;
+					break;
+				end
+			else
+				if _Shadowform_RDY and not _Shadowform_FORM then
+					tinsert(ConROC.SuggestedSpells, _Shadowform);
+					_Shadowform_FORM = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _Shadowform_FORM then
+					if not _in_combat then
+						if _MindBlast_RDY and currentSpell ~= _MindBlast then
+							tinsert(ConROC.SuggestedSpells, _MindBlast);
+							_MindBlast_RDY = false;
+							_Queue = _Queue + 1;
+							break;
+						end
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Debuff_HexofWeakness) and _HexofWeakness_RDY and not _HexofWeakness_DEBUFF then
+						tinsert(ConROC.SuggestedSpells, _HexofWeakness);
+						_HexofWeakness_DEBUFF = true;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Debuff_ShadowWordPain) and _ShadowWordPain_RDY and not _ShadowWordPain_DEBUFF then
+						tinsert(ConROC.SuggestedSpells, _ShadowWordPain);
+						_ShadowWordPain_DEBUFF = true;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Debuff_VampiricEmbrace) and _VampiricEmbrace_RDY and not _VampiricEmbrace_DEBUFF then
+						tinsert(ConROC.SuggestedSpells, _VampiricEmbrace);
+						_VampiricEmbrace_DEBUFF = true;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Option_UseWand) and _Has_Wand and (_Mana_Percent <= 20 or _Target_Percent_Health <= 5) then
+						tinsert(ConROC.SuggestedSpells, Caster.Shoot);
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _MindBlast_RDY and currentSpell ~= _MindBlast then
+						tinsert(ConROC.SuggestedSpells, _MindBlast);
+						_MindBlast_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Filler_MindFlay) and _MindFlay_RDY then
+						tinsert(ConROC.SuggestedSpells, _MindFlay);
+						_Queue = _Queue + 1;
+						break;
+					end
+				end
+
+				if _is_Enemy and not _Shadowform_FORM then
+					if not _in_combat then
+						if _MindBlast_RDY and currentSpell ~= _MindBlast then
+							tinsert(ConROC.SuggestedSpells, _MindBlast);
+							_MindBlast_RDY = false;
+							_Queue = _Queue + 1;
+							break;
+						elseif ConROC:CheckBox(ConROC_SM_Debuff_HolyFire) and _HolyFire_RDY and not _HolyFire_DEBUFF and currentSpell ~= _HolyFire then
+							tinsert(ConROC.SuggestedSpells, _HolyFire);
+							_HolyFire_RDY = false;
+							_Queue = _Queue + 1;
+							break;
+						elseif _Smite_RDY and currentSpell ~= _Smite then
+							tinsert(ConROC.SuggestedSpells, _Smite);
+							_Smite_RDY = false;
+							_Queue = _Queue + 1;
+							break;
+						end
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Debuff_HexofWeakness) and _HexofWeakness_RDY and not _HexofWeakness_DEBUFF then
+						tinsert(ConROC.SuggestedSpells, _HexofWeakness);
+						_HexofWeakness_DEBUFF = true;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Debuff_ShadowWordPain) and _ShadowWordPain_RDY and not _ShadowWordPain_DEBUFF then
+						tinsert(ConROC.SuggestedSpells, _ShadowWordPain);
+						_ShadowWordPain_DEBUFF = true;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Debuff_VampiricEmbrace) and _VampiricEmbrace_RDY and not _VampiricEmbrace_DEBUFF then
+						tinsert(ConROC.SuggestedSpells, _VampiricEmbrace);
+						_VampiricEmbrace_DEBUFF = true;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Debuff_HolyFire) and _HolyFire_RDY and not _HolyFire_DEBUFF and currentSpell ~= _HolyFire then
+						tinsert(ConROC.SuggestedSpells, _HolyFire);
+						_HolyFire_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Option_UseWand) and _Has_Wand and (_Mana_Percent <= 20 or _Target_Percent_Health <= 5) then
+						tinsert(ConROC.SuggestedSpells, Caster.Shoot);
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _MindBlast_RDY and currentSpell ~= _MindBlast then
+						tinsert(ConROC.SuggestedSpells, _MindBlast);
+						_MindBlast_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Filler_MindFlay) and _MindFlay_RDY then
+						tinsert(ConROC.SuggestedSpells, _MindFlay);
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if ConROC:CheckBox(ConROC_SM_Filler_Smite) and _Smite_RDY then
+						tinsert(ConROC.SuggestedSpells, _Smite);
+						_Queue = _Queue + 1;
+						break;
+					end
+				end
+
+				tinsert(ConROC.SuggestedSpells, 26008); --Waiting Spell Icon
+				_Queue = _Queue + 3;
+				break;
 			end
-			if ConROC:CheckBox(ConROC_SM_Spell_Homunculi) and _Homunculi_RDY then
-				return _Homunculi
-			end
-			if _VoidPlague_RDY and not _VoidPlague_DEBUFF then
-				return _VoidPlague
-			end
-			if ConROC:CheckBox(ConROC_SM_Debuff_ShadowWordPain) and _ShadowWordPain_RDY and not _ShadowWordPain_DEBUFF then
-				return _ShadowWordPain;
-			end
-			if _MindBlast_RDY and currentSpell ~= _MindBlast then
-				return _MindBlast;
-			end
-			if ConROC:CheckBox(ConROC_SM_Spell_ShadowWordDeath) and _ShadowWordDeath_RDY and not _Player_Percent_Health < 50 then
-				return _ShadowWordDeath;
-			end
-			if ConROC:CheckBox(ConROC_SM_Debuff_MindFlay) and _MindFlay_RDY then
-				return _MindFlay;
-			end
-			if _in_combat and ConROC:CheckBox(ConROC_SM_Spell_Penance) and _Penance_RDY then
-				return _Penance;
-			end
-			if _Smite_RDY then
-				return _Smite;
-			end
-			if ConROC:CheckBox(ConROC_SM_Option_UseWand) and _Has_Wand and (_Mana_Percent <= 20 or _Target_Percent_Health <= 5) then
-				return Caster.Shoot;
-			end
 		end
-	end
-
-	if _Shadowform_RDY and not _Shadowform_FORM then
-		return _Shadowform;
-	end
-
-	if _Shadowform_FORM then
-		if not _in_combat then
-			if _MindBlast_RDY and currentSpell ~= _MindBlast then
-				return _MindBlast;
-			end
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Debuff_HexofWeakness) and _HexofWeakness_RDY and not _HexofWeakness_DEBUFF then
-			return _HexofWeakness;
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Debuff_ShadowWordPain) and _ShadowWordPain_RDY and not _ShadowWordPain_DEBUFF then
-			return _ShadowWordPain;
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Debuff_VampiricEmbrace) and _VampiricEmbrace_RDY and not _VampiricEmbrace_DEBUFF then
-			return _VampiricEmbrace;
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Option_UseWand) and _Has_Wand and (_Mana_Percent <= 20 or _Target_Percent_Health <= 5) then
-			return Caster.Shoot;
-		end
-
-		if _MindBlast_RDY and currentSpell ~= _MindBlast then
-			return _MindBlast;
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Debuff_MindFlay) and _MindFlay_RDY then
-			return _MindFlay;
-		end
-	end
-
-	if _is_Enemy and not _Shadowform_FORM then
-		if not _in_combat then
-			if _MindBlast_RDY and currentSpell ~= _MindBlast then
-				return _MindBlast;
-			elseif ConROC:CheckBox(ConROC_SM_Debuff_HolyFire) and _HolyFire_RDY and not _HolyFire_DEBUFF and currentSpell ~= _HolyFire then
-				return _HolyFire;
-			elseif _Smite_RDY and currentSpell ~= _Smite then
-				return _Smite;
-			end
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Debuff_HexofWeakness) and _HexofWeakness_RDY and not _HexofWeakness_DEBUFF then
-			return _HexofWeakness;
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Debuff_ShadowWordPain) and _ShadowWordPain_RDY and not _ShadowWordPain_DEBUFF then
-			return _ShadowWordPain;
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Debuff_VampiricEmbrace) and _VampiricEmbrace_RDY and not _VampiricEmbrace_DEBUFF then
-			return _VampiricEmbrace;
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Debuff_HolyFire) and _HolyFire_RDY and not _HolyFire_DEBUFF and currentSpell ~= _HolyFire then
-			return _HolyFire;
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Option_UseWand) and _Has_Wand and (_Mana_Percent <= 20 or _Target_Percent_Health <= 5) then
-			return Caster.Shoot;
-		end
-
-		if _MindBlast_RDY and currentSpell ~= _MindBlast then
-			return _MindBlast;
-		end
-
-		if ConROC:CheckBox(ConROC_SM_Debuff_MindFlay) and _MindFlay_RDY then
-			return _MindFlay;
-		end
-
-		if _Smite_RDY then
-			return _Smite;
-		end
-	end
+	until _Queue >= 3;
 return nil;
 end
 
 function ConROC.Priest.Defense(_, timeShift, currentSpell, gcd)
-	ConROC:UpdateSpellID()
+	ConROC:UpdateSpellID();
+	wipe(ConROC.SuggestedDefSpells);
 	ConROC:Stats();
 
 --Abilities
@@ -287,30 +410,16 @@ function ConROC.Priest.Defense(_, timeShift, currentSpell, gcd)
 		local _ShadowProtection_BUFF = ConROC:Aura(_ShadowProtection, timeShift);
 
 --Rotations
-	if _DivineSpirit_RDY and not (_PrayerofSpirit_BUFF or _DivineSpirit_BUFF) and UnitAffectingCombat("player") then
-		return _DivineSpirit;
-	end
-	if _PrayerofSpirit_RDY and not (_PrayerofSpirit_BUFF or _DivineSpirit_BUFF) and UnitInParty("player") then
-		return _PrayerofSpirit;
-	end
-
-	if _PowerWordFortitude_RDY and not (_PrayerofFortitude_BUFF or _PowerWordFortitude_BUFF) and UnitAffectingCombat("player") then
-		return _PowerWordFortitude;
-	end
-	if _PrayerofFortitude_RDY and not (_PrayerofFortitude_BUFF or _PowerWordFortitude_BUFF) and UnitInParty("player") then
-		return _PrayerofFortitude;
-	end
-
 	if _InnerFire_RDY and not _InnerFire_BUFF then
-		return _InnerFire;
+		tinsert(ConROC.SuggestedDefSpells, _InnerFire);
 	end
 
 	if ConROC:CheckBox(ConROC_SM_Buff_ShadowProtection) and _ShadowProtection_RDY and not _ShadowProtection_BUFF then
-		return _ShadowProtection;
+		tinsert(ConROC.SuggestedDefSpells, _ShadowProtection);
 	end
 
 	if _PowerWordShield_RDY and not _PowerWordShield_BUFF and not _WeakendSoul_DEBUFF then
-		return _PowerWordShield;
+		tinsert(ConROC.SuggestedDefSpells, _PowerWordShield);
 	end
 return nil;
 end
