@@ -156,7 +156,7 @@ function ConROC.Priest.Damage(_, timeShift, currentSpell, gcd)
 	repeat
 		while(true) do
 			if ConROC.Seasons.IsSoD then
-				if ConROC:CheckBox(ConROC_SM_Role_Caster) or ConROC:CheckBox(ConROC_SM_Role_PvP) then
+				if not ConROC:CheckBox(ConROC_SM_Role_Healer) or (ConROC:CheckBox(ConROC_SM_Role_Healer) and ConROC:TarHostile()) then
 					if _Shadowform_RDY and not _Shadowform_FORM then
 						tinsert(ConROC.SuggestedSpells, _Shadowform);
 						_Shadowform_FORM = true;
@@ -236,10 +236,6 @@ function ConROC.Priest.Damage(_, timeShift, currentSpell, gcd)
 						_Queue = _Queue + 1;
 						break;
 					end
-
-					tinsert(ConROC.SuggestedSpells, 26008); --Waiting Spell Icon
-					_Queue = _Queue + 3;
-					break;
 				end
 			else
 				if _Shadowform_RDY and not _Shadowform_FORM then
@@ -373,11 +369,11 @@ function ConROC.Priest.Damage(_, timeShift, currentSpell, gcd)
 						break;
 					end
 				end
-
-				tinsert(ConROC.SuggestedSpells, 26008); --Waiting Spell Icon
-				_Queue = _Queue + 3;
-				break;
 			end
+
+			tinsert(ConROC.SuggestedSpells, 26008); --Waiting Spell Icon
+			_Queue = _Queue + 3;
+			break;
 		end
 	until _Queue >= 3;
 return nil;
