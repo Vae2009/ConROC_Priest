@@ -130,12 +130,19 @@ function ConROC:setRoleSpellClicked(_spellData, _oItem)
 end
 
 local function CheckScrollbarVisibility()
-    if ConROCScrollChild:GetHeight() <= ConROCScrollFrame:GetHeight() then
+	if _G["ConROCSpellmenuFrame_OpenButton"]:IsShown() then
+        return
+    end
+    local scrollChildHeight = math.ceil(ConROCScrollChild:GetHeight())
+    local containerHeight = math.ceil(ConROCScrollFrame:GetHeight())
+	ConROCSpellmenuFrame:SetWidth(frameWidth)
+
+    if scrollChildHeight <= containerHeight then
     	ConROCScrollbar:Hide()
         ConROCScrollContainer:SetHeight(math.ceil(ConROCScrollChild:GetHeight())+16)
     	ConROCSpellmenuFrame:SetHeight(math.ceil(ConROCScrollContainer:GetHeight())+68)
 		ConROCScrollFrame:SetPoint("TOPLEFT", 8, -8)
-		ConROCScrollFrame:SetPoint("BOTTOMRIGHT", -8, 8)
+		ConROCScrollFrame:SetPoint("BOTTOMRIGHT", -28, 8)
     	ConROCScrollChild:SetWidth(ConROCScrollFrame:GetWidth())
     else
     	ConROCScrollbar:Show()
